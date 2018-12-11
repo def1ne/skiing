@@ -1,1 +1,1 @@
-# skiing
+# Skiing in Singapore code challenge.
