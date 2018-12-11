@@ -7,6 +7,18 @@ import scala.annotation.tailrec
 import scala.io.Source
 
 object BreezeBoot extends App {
+
+  def matrixData(): IndexedSeq[IndexedSeq[String]] = {
+    val mapFileURLString: String = "http://s3-ap-southeast-1.amazonaws.com/geeks.redmart.com/coding-problems/map.txt"
+    val mapFileSource = Source.fromURL(mapFileURLString)
+    CSVReader.read(input = mapFileSource.reader(), separator = ' ', skipLines = 0)
+  }
+
+  def testMatrixData(): IndexedSeq[IndexedSeq[String]] = {
+    val testData: String = "4 4\n4 8 7 3\n2 5 9 3\n6 3 2 5\n4 4 1 6"
+    CSVReader.parse(input = testData, separator = ' ', skipLines = 0)
+  }
+
   /**
     * Transform original matrix row and column to adjacency vector position.
     *
@@ -108,7 +120,7 @@ object BreezeBoot extends App {
     val iterationMatrix = prevPathMatrix * adjacencyMatrix
     if (iterationMatrix.data.isEmpty) {
       println(s"find matrix paths complete with ${prevIterations.size} iterations")
-      prevIterations
+      prevPathMatrix :: prevIterations
     } else {
       findMatrixPaths(adjacencyMatrix, iterationMatrix, prevPathMatrix :: prevIterations)
     }
@@ -178,11 +190,10 @@ object BreezeBoot extends App {
     }).toSet
   }
 
-  val mapFileURLString: String = "http://s3-ap-southeast-1.amazonaws.com/geeks.redmart.com/coding-problems/map.txt"
-  val mapFileSource = Source.fromURL(mapFileURLString)
-  val sourceMatrix = CSVReader.read(input = mapFileSource.reader(), separator = ' ', skipLines = 0)
+//  val sourceMatrix: IndexedSeq[IndexedSeq[String]] = testMatrixData()
+  val sourceMatrix: IndexedSeq[IndexedSeq[String]] = matrixData()
   val stringMatrix = sourceMatrix.drop(1)
-  val matrix = DenseMatrix.tabulate(stringMatrix.length, stringMatrix.head.length)((i, j) => stringMatrix(i)(j).toInt)
+  val matrix: DenseMatrix[Int] = DenseMatrix.tabulate(stringMatrix.length, stringMatrix.head.length)((i, j) => stringMatrix(i)(j).toInt)
 
   val adjacencyMatrix = buildAdjacencyMatrix(matrix)
 
